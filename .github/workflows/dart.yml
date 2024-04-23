@@ -12,56 +12,18 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2  # Action to checkout your repository code
-        
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2  # Action to set up Flutter environment
-        with:
-          flutter-version: 'stable'  # Specify the Flutter version
-        
-      - name: Install Dependencies
-        run: flutter pub get  # Command to install dependencies
-        
-      - name: Run Tests
-        run: flutter test  # Command to run tests
-        
-      - name: Build APK
-        run: flutter build apk  # Command to build APK file
-        
-  build_android:
-    name: Build Android
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout Code
         uses: actions/checkout@v2
         
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
-          
+          flutter-version: 'stable'  # Specify the Flutter version
+        
       - name: Install Dependencies
         run: flutter pub get
         
+      - name: Run Tests
+        run: flutter test
+        
       - name: Build APK
         run: flutter build apk
-        
-  # build_ios:
-  #   name: Build iOS
-  #   runs-on: macos-latest
-    
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v2
-        
-  #     - name: Setup Flutter
-  #       uses: subosito/flutter-action@v2
-  #       with:
-  #         flutter-version: 'stable'
-          
-  #     - name: Install Dependencies
-  #       run: flutter pub get
-        
-  #     - name: Build iOS
-  #       run: flutter build ios --release --no-codesign
