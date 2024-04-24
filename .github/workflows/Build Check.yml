@@ -1,0 +1,51 @@
+name: Flutter CI/CD
+
+on:
+  push:
+    branches:
+      - main  # Trigger workflow on push to the main branch
+
+jobs:
+  build_and_test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        
+      - name: Get Latest Commit SHA
+        id: commit_info
+        run: echo "::set-output name=commit_sha::$(git rev-parse HEAD)"
+      
+      - name: Get Previous Commit SHA
+        id: previous_commit_info
+        run: echo "::set-output name=previous_commit_sha::$(git rev-parse HEAD^)"
+        
+      - name: Check for Changes in Code
+        id: check_code_changes
+        run: echo "::set-output name=code_changed::$(git diff --name-only ${{ steps.previous_commit_info.outputs.previous_commit_sha }} ${{ steps.commit_info.outputs.commit_sha }})"
+        
+      - name: Determine Version Increment
+        id: determine_version
+        run: |
+          if [ -n "${{ steps.check_code_changes.outputs.code_changed }}" ]; then
+            echo "::set-output name=version_increment::patch" # Assuming a patch version increment for simplicity
+          else
+            echo "::set-output name=version_increment::none"
+          fi
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.19.6
+
+      - name: Install Dependencies
+        run: flutter pub get
+        
+      - name: Build APK
+        run: flutter build apk
+
+      - name: Increment Version
+        if: steps.determine_version.outputs.version_increment != 'none'
+        run: echo "Increase version here according to the determined increment."
