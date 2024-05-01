@@ -44,7 +44,7 @@ jobs:
 
       - name: Upload APK
         if: success() && env.VERSION_INCREMENT != 'none'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: my-apk
           path: build/app/outputs/flutter-apk/app-release.apk
