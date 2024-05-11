@@ -13,6 +13,8 @@ dependencies:
   gap: ^3.0.1
   external_path: ^1.0.3
   media_scanner: ^2.1.0
+  permission_handler: ^11.3.1
+  google_mlkit_text_recognition: ^0.13.0
 
 dev_dependencies:
   flutter_test:

@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:external_path/external_path.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:media_scanner/media_scanner.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+// import 'package:permission_handler/permission_handler.dart';
 
 class CameraPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -60,6 +63,19 @@ class _CameraPageState extends State<CameraPage> {
       imagesList.add(file);
     });
     MediaScanner.loadMedia(path: file.path);
+    final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+    final inputImage = InputImage.fromFile(file); // Load your image
+    final recognizedText = await textRecognizer.processImage(inputImage);
+
+// Use the extracted text
+    
+    for (TextBlock block in recognizedText.blocks) {
+      for (TextLine line in block.lines) {
+        if (kDebugMode) {
+          print(line.text);
+        }
+      }
+    }
   }
 
   void startCamera(int camera) {

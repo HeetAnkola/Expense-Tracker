@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: HomePage(), // Set the home page to your main page
     );
   }
@@ -15,7 +17,9 @@ class MyApp extends StatelessWidget {
 
 class HomePage extends StatelessWidget {
   final double percentageColumn1 = 0.6; // Example percentage for column 1 (60%)
-  final double percentageColumn2 = 0.3; // Example percentage for column 2 (30%)
+  final double percentageColumn2 = 0.3;
+
+  const HomePage({super.key}); // Example percentage for column 2 (30%)
 
   Color getColorForPercentage(double percentage) {
     if (percentage <= 0.5) {
