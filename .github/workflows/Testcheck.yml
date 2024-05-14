@@ -1,9 +1,8 @@
 name: Get Release Version
 
 on:
-  release:
-    types: [published]
-
+  workflow_dispatch:
+  
 jobs:
   get_version:
     runs-on: ubuntu-latest
