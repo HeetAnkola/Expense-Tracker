@@ -2,41 +2,44 @@ name: Flutter Build (iOS & Android)
 
 on:
   workflow_dispatch:
-
+  
 jobs:
   build-ios:
     name: 🎉 iOS Build
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+
+      - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          
-      - name: Install dependencies
-        run: flutter pub get
-        
-      - name: Install CocoaPods dependencies
-        run: pod install
+          architecture: x64
+      - run: flutter pub get
+      
+      - run: pod repo update
         working-directory: ios
 
-      - name: Build IPA
-        run: flutter build ipa --release --no-codesign
-        
-      - name: Archive IPA
-        run: xcodebuild -workspace Runner.xcworkspace -scheme Runner archive -archivePath build/Runner.xcarchive
+      - run: flutter build ios --release --no-codesign
 
-      - name: Export IPA
-        run: xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ios/iphoneos -exportOptionsPlist ios/ExportOptions.plist
+      - run: mkdir Payload
+        working-directory: build/ios/iphoneos
 
-      - name: Upload IPA artifact
-        uses: actions/upload-artifact@v3
+      - run: mv Runner.app/ Payload
+        working-directory: build/ios/iphoneos
+
+      - name: Zip output
+        run: zip -qq -r -9 FlutterIpaExport.ipa Payload
+        working-directory: build/ios/iphoneos
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          name: Runner.ipa
-          path: build/ios/iphoneos/Runner.ipa
-  
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/ios/iphoneos/FlutterIpaExport.ipa
+          tag: v1.0
+          overwrite: true
+          body: "This is first release"
+
   build-android:
     name: 🤖 Android Build
     runs-on: ubuntu-latest
@@ -54,8 +57,17 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v3
+      # - name: Upload APK artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: app-release.apk
+      #     path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          name: app-release.apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/app/outputs/flutter-apk/app-release.apk
+          tag: v1.0
+          overwrite: true
+          body: "This is first release"
