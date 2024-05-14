@@ -1,8 +1,7 @@
 name: Flutter Build (iOS & Android)
 
 on:
-  push:
-    branches: main
+  workflow_dispatch:
   
 jobs:
 
