@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ github.ref }}
+    env:
+      GITHUB_Token: ${{secrets.GITHUB_TOKEN}}
     steps:
       - uses: actions/checkout@v3
       - name: Get version from tag
