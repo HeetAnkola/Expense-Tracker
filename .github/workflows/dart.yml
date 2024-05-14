@@ -1,9 +1,23 @@
 name: Flutter Build (iOS & Android)
 
 on:
-  workflow_dispatch:
+  push:
+    branches: main
   
 jobs:
+
+  get_version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get version from tag
+        id: get_version
+        run: echo "version=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+      - name: Output version
+        run: echo "The version is ${{ steps.get_version.outputs.version }}"
+        
   build-ios:
     name: 🎉 iOS Build
     runs-on: macos-latest
