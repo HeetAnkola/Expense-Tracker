@@ -1,4 +1,4 @@
-name: Flutter Build (iOS & Android)
+name: Testing Workflow
 
 on:
   workflow_dispatch:
