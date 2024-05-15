@@ -33,9 +33,9 @@ jobs:
     - name: Increment Patch Version
       id: increment_patch
       run: |
-          echo "$(( ${{ steps.extract_version.outputs.version }} + 1 ))"
-          patch=$(( ${{ steps.extract_version.outputs.version }} + 1 ))  # Use $((...)) for arithmetic
-          echo "incremented_patch=$patch" >> $GITHUB_OUTPUT
+          echo "$(( ${{ steps.extract_version.outputs.version }} + 1.0 ))"
+          patch=$(( ${{ steps.extract_version.outputs.major }} + 1 ))  # Use $((...)) for arithmetic
+          echo "incremented_patch=${{$patch + .0}}" >> $GITHUB_OUTPUT
     - name: Display Version
       run: echo "The released version is ${{ steps.increment_patch.outputs.incremented_patch }}"
         
