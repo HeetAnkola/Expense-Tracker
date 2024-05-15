@@ -5,57 +5,21 @@ on:
   
 jobs:
 
-  # get_version:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Get Latest Release
-  #     id: get_latest_release
-  #     uses: actions/github-script@v6
-  #     with:
-  #       script: |
-  #         const { data: release } = await github.rest.repos.getLatestRelease({
-  #           owner: context.repo.owner,
-  #           repo: context.repo.repo,
-  #         });
-  #         core.setOutput('version', release.tag_name);
-  #   - name: Display Version
-  #     run: echo "The released version is ${{ steps.get_latest_release.outputs.version }}"
-
-  increment_version:
+  get_version:
     runs-on: ubuntu-latest
     steps:
-      - name: Get Latest Release
-        id: get_latest_release
-        uses: actions/get-latest-release@v1
-        with:
-          repo: ${{ github.repository }}
-
-      - name: Extract Version Components
-        id: extract_version
-        run: |
-          # Assuming version format is MAJOR.MINOR.PATCH
-          echo "major=$(echo ${{ steps.get_latest_release.outputs.version }} | cut -d. -f1)" >> $GITHUB_OUTPUT
-          echo "minor=$(echo ${{ steps.get_latest_release.outputs.version }} | cut -d. -f2)" >> $GITHUB_OUTPUT
-          echo "patch=$(echo ${{ steps.get_latest_release.outputs.version }} | cut -d. -f3)" >> $GITHUB_OUTPUT
-
-      - name: Increment Patch Version
-        id: increment_patch
-        run: |
-          patch=$((steps.extract_version.outputs.patch + 1))
-          echo "incremented_patch=$patch" >> $GITHUB_OUTPUT
-
-      - name: Assemble New Version
-        id: assemble_version
-        run: |
-          new_version="${{ steps.extract_version.outputs.major }}.${{ steps.extract_version.outputs.minor }}.${{ steps.increment_patch.outputs.incremented_patch }}"
-          echo "new_version=$new_version" >> $GITHUB_OUTPUT
-
-      # Use the new_version output in subsequent steps
-      - name: Use New Version
-        run: |
-          echo "The new version is ${{ steps.assemble_version.outputs.new_version }}"
-          # Create a new tag, update package.json, etc.
-
+    - name: Get Latest Release
+      id: get_latest_release
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { data: release } = await github.rest.repos.getLatestRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          });
+          core.setOutput('version', release.tag_name);
+    - name: Display Version
+      run: echo "The released version is ${{ steps.get_latest_release.outputs.version }}"
         
   build-ios:
     name: 🎉 iOS Build
@@ -89,9 +53,9 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/ios/iphoneos/FlutterIpaExport.ipa
-          tag: ${{ steps.get_latest_release.outputs.version }} 
+          tag: ${{ steps.get_latest_release.outputs.version + 1 }} 
           overwrite: true
-          body: "This is ${{ steps.get_latest_release.outputs.version }} release"
+          body: "This is ${{ steps.get_latest_release.outputs.version + 1 }} release"
 
   build-android:
     name: 🤖 Android Build
