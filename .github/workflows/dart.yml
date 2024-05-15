@@ -18,12 +18,23 @@ jobs:
             repo: context.repo.repo,
           });
           core.setOutput('version', release.tag_name);
-    - name: Increment version
-      id: increment_version
+          
+    - name: Extract Version Components
+      id: extract_version
       run: |
-          patch=$((${{steps.get_latest_release.outputs.version}} + 1))
+          # Assuming version format is vMAJOR.MINOR
+          version="${{ steps.get_latest_release.outputs.version }}"
+          version="${version#v}"  # Remove the leading "v"
+
+          IFS='.' read -r major minor <<< "$version"
+          echo "major=$major" >> $GITHUB_OUTPUT
+          echo "minor=$minor" >> $GITHUB_OUTPUT
+
+    - name: Increment Patch Version
+      id: increment_patch
+      run: |
+          patch=$(( ${{ steps.extract_version.outputs.patch }} + 1 ))  # Use $((...)) for arithmetic
           echo "incremented_patch=$patch" >> $GITHUB_OUTPUT
-      
     - name: Display Version
       run: echo "The released version is ${{ steps.increment_version.outputs.patch }}"
         
