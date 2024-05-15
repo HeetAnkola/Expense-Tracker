@@ -75,6 +75,7 @@ jobs:
   #         body: "This is ${{ get_version.steps.increment_patch.outputs.incremented_patch }} release"
 
   build-android:
+    needs: get_version
     name: 🤖 Android Build
     runs-on: ubuntu-latest
     steps:
@@ -102,6 +103,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/app/outputs/flutter-apk/app-release.apk
-          tag: v${{ get_version.steps.increment_patch.outputs.incremented_patch }} 
+          tag: v${{ needs.get_version.steps.increment_patch.outputs.incremented_patch }} 
           overwrite: true
-          body: "This is ${{ get_version.steps.increment_patch.outputs.incremented_patch }} release"
+          body: "This is ${{ needs.get_version.steps.increment_patch.outputs.incremented_patch }} release"
