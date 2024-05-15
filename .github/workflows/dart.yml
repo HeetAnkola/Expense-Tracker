@@ -8,21 +8,6 @@ jobs:
   get_version:
     runs-on: ubuntu-latest
     steps:
-    - name: Display Version
-      run: echo "The released version is ${{ github.event.release.tag_name }}"
-
-  get_version2:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-    - name: Get Latest Tag
-      id: get_tag
-      run: |
-        echo ::set-output name=TAG::$(git describe --tags --abbrev=0)
-    - name: Display Version
-      run: echo "The released version is ${{ steps.get_tag.outputs.TAG }}"
-
     - name: Get Latest Release
       id: get_latest_release
       uses: actions/github-script@v6
@@ -68,9 +53,9 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/ios/iphoneos/FlutterIpaExport.ipa
-          tag: v1.0
+          tag: ${{ steps.get_latest_release.outputs.version }}
           overwrite: true
-          body: "This is first release"
+          body: "This is ${{ steps.get_latest_release.outputs.version }} release"
 
   build-android:
     name: 🤖 Android Build
