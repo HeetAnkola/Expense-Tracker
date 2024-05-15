@@ -33,7 +33,6 @@ jobs:
     - name: Increment Patch Version
       id: increment_patch
       run: |
-          echo "$(( ${{ steps.extract_version.outputs.version }} + 1.0 ))"
           patch=$(( ${{ steps.extract_version.outputs.major }} + 1 ))  # Use $((...)) for arithmetic
           echo "incremented_patch=$patch.0" >> $GITHUB_OUTPUT
     - name: Display Version
@@ -71,7 +70,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/ios/iphoneos/FlutterIpaExport.ipa
-          tag: ${{ steps.increment_version.outputs.patch }} 
+          tag: v${{ steps.increment_version.outputs.patch }} 
           overwrite: true
           body: "This is ${{ steps.increment_version.outputs.patch }} release"
 
