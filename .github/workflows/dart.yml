@@ -17,7 +17,7 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
           });
-          core.setOutput('version', release.tag_name);
+          core.setOutput('version', release.tag_name + 1);
     - name: Display Version
       run: echo "The released version is ${{ steps.get_latest_release.outputs.version }}"
         
@@ -53,9 +53,9 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/ios/iphoneos/FlutterIpaExport.ipa
-          tag: ${{ steps.get_latest_release.outputs.version + 1 }} 
+          tag: ${{ steps.get_latest_release.outputs.version }} 
           overwrite: true
-          body: "This is ${{ steps.get_latest_release.outputs.version + 1 }} release"
+          body: "This is ${{ steps.get_latest_release.outputs.version }} release"
 
   build-android:
     name: 🤖 Android Build
