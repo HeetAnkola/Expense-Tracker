@@ -21,7 +21,7 @@ jobs:
     - name: Increment version
       id: increment_version
       run: |
-          patch=$((steps.get_latest_release.outputs.version + 1))
+          patch=$((${{steps.get_latest_release.outputs.version}} + 1))
           echo "incremented_patch=$patch" >> $GITHUB_OUTPUT
       
     - name: Display Version
