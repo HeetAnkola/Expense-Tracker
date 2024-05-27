@@ -117,6 +117,5 @@ jobs:
             - uses: actions/checkout@v4
 
             - name: print build version
-              with:
-                body: "This is ${{ needs.get_version.outputs.my_variable }} release"
+              run: echo "This is ${{ needs.get_version.outputs.my_variable }} release"
     
