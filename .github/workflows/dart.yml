@@ -41,6 +41,7 @@ jobs:
       run: echo "The released version is ${{ steps.increment_patch.outputs.incremented_patch }}"
         
   build-ios:
+    needs: get_version
     name: 🎉 iOS Build
     runs-on: macos-latest
     steps:
