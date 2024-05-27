@@ -7,6 +7,8 @@ jobs:
 
   get_version:
     runs-on: ubuntu-latest
+    outputs: 
+      my_variable: ${{steps.increment_patch.outputs.incremented_patch }}
     steps:
     - name: Get Latest Release
       id: get_latest_release
@@ -103,6 +105,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/app/outputs/flutter-apk/app-release.apk
-          tag: v${{ needs.get_version.outputs.incremented_patch }} 
+          tag: v${{ needs.get_version.outputs.my_variable }} 
           overwrite: true
-          body: "This is ${{ needs.get_version.outputs.incremented_patch }} release"
+          body: "This is ${{ needs.get_version.outputs.my_variable }} release"
