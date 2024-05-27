@@ -1,10 +1,47 @@
-name: iOS-ipa-build
+name: Flutter Build (iOS & Android)
 
 on:
   workflow_dispatch:
-
+  
 jobs:
+
+  get_version:
+    runs-on: ubuntu-latest
+    outputs: 
+      my_variable: ${{steps.increment_patch.outputs.incremented_patch }}
+    steps:
+    - name: Get Latest Release
+      id: get_latest_release
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { data: release } = await github.rest.repos.getLatestRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          });
+          core.setOutput('version', release.tag_name);
+          
+    - name: Extract Version Components
+      id: extract_version
+      run: |
+          # Assuming version format is vMAJOR.MINOR
+          version="${{ steps.get_latest_release.outputs.version }}"
+          version="${version#v}"  # Remove the leading "v"
+          echo "version=$version" >> $GITHUB_OUTPUT
+          IFS='.' read -r major minor <<< "$version"
+          echo "major=$major" >> $GITHUB_OUTPUT
+          echo "minor=$minor" >> $GITHUB_OUTPUT
+
+    - name: Increment Patch Version
+      id: increment_patch
+      run: |
+          patch=$(( ${{ steps.extract_version.outputs.major }} + 1 ))  # Use $((...)) for arithmetic
+          echo "incremented_patch=$patch.0" >> $GITHUB_OUTPUT
+    - name: Display Version
+      run: echo "The released version is ${{ steps.increment_patch.outputs.incremented_patch }}"
+        
   build-ios:
+    needs: get_version
     name: 🎉 iOS Build
     runs-on: macos-latest
     steps:
@@ -16,7 +53,6 @@ jobs:
           architecture: x64
       - run: flutter pub get
       
-
       - run: pod repo update
         working-directory: ios
 
@@ -37,6 +73,40 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/ios/iphoneos/FlutterIpaExport.ipa
-          tag: v1.0
+          tag: v${{ needs.get_version.outputs.my_variable }} 
           overwrite: true
-          body: "This is first release"
+          body: "This is ${{ needs.get_version.outputs.my_variable }} release"
+
+  build-android:
+    needs: get_version
+    name: 🤖 Android Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/app/outputs/flutter-apk/app-release.apk
+          tag: v${{ needs.get_version.outputs.my_variable }} 
+          overwrite: true
+          body: "This is ${{ needs.get_version.outputs.my_variable }} release"
+  
