@@ -12,7 +12,7 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         
       - name: Get Latest Commit SHA
         run: echo "COMMIT_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
@@ -44,7 +44,7 @@ jobs:
 
       - name: Upload APK
         if: success() && env.VERSION_INCREMENT != 'none'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: my-apk
           path: build/app/outputs/flutter-apk/app-release.apk
