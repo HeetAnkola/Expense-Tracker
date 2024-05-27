@@ -15,6 +15,7 @@ dependencies:
   media_scanner: ^2.1.0
   permission_handler: ^11.3.1
   google_mlkit_text_recognition: ^0.13.0
+  http: ^1.2.1
 
 dev_dependencies:
   flutter_test:

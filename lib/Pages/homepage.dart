@@ -1,25 +1,23 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../Repo/Data.dart';
+
 void main() {
-  runApp(const MyApp());
+  runApp(const HomePage());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomePage(), // Set the home page to your main page
-    );
-  }
+  State<HomePage> createState() => _HomePage();
 }
 
-class HomePage extends StatelessWidget {
+class _HomePage extends State<HomePage> {
   final double percentageColumn1 = 0.6; // Example percentage for column 1 (60%)
   final double percentageColumn2 = 0.3;
-
-  const HomePage({super.key}); // Example percentage for column 2 (30%)
+  List<User> _users = [];
 
   Color getColorForPercentage(double percentage) {
     if (percentage <= 0.5) {
@@ -30,7 +28,29 @@ class HomePage extends StatelessWidget {
       return Colors.red; // Red color for percentages > 75%
     }
   }
-  
+
+  @override
+  void initState(){
+    super.initState();
+    _loadData();
+  }
+
+
+  void _loadData() async{
+    try{
+      List<User> users = await fetchUsers();
+      print(users);
+      setState(() {
+        _users = users;
+      });
+    }
+    catch(e){
+      if (kDebugMode) {
+        print("Error Loading data: $e");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,10 +151,10 @@ class HomePage extends StatelessWidget {
             height: 100,
             color: Colors.black,
             width: double.infinity,
-            child: const Center(
+            child: Center( // Remove 'const'
               child: Text(
-                "hi from 2",
-                style: TextStyle(
+                _users.isNotEmpty ? _users[0].name : 'No users found', // Display first user's name or a message
+                style: const TextStyle(
                   color: Colors.white,
                 ),
               ),
