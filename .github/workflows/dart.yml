@@ -76,35 +76,47 @@ jobs:
   #         overwrite: true
   #         body: "This is ${{ get_version.steps.increment_patch.outputs.incremented_patch }} release"
 
-  build-android:
-    needs: get_version
-    name: 🤖 Android Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+  # build-android:
+  #   needs: get_version
+  #   name: 🤖 Android Build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
       
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
+  #     - name: Set up Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         channel: 'stable'
           
-      - name: Install dependencies
-        run: flutter pub get
+  #     - name: Install dependencies
+  #       run: flutter pub get
         
-      - name: Build APK
-        run: flutter build apk --release
+  #     - name: Build APK
+  #       run: flutter build apk --release
 
-      # - name: Upload APK artifact
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: app-release.apk
-      #     path: build/app/outputs/flutter-apk/app-release.apk
+  #     # - name: Upload APK artifact
+  #     #   uses: actions/upload-artifact@v3
+  #     #   with:
+  #     #     name: app-release.apk
+  #     #     path: build/app/outputs/flutter-apk/app-release.apk
 
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/app/outputs/flutter-apk/app-release.apk
-          tag: v${{ needs.get_version.outputs.my_variable }} 
-          overwrite: true
-          body: "This is ${{ needs.get_version.outputs.my_variable }} release"
+  #     - name: Upload binaries to release
+  #       uses: svenstaro/upload-release-action@v2
+  #       with:
+  #         repo_token: ${{ secrets.GITHUB_TOKEN }}
+  #         file: build/app/outputs/flutter-apk/app-release.apk
+  #         tag: v${{ needs.get_version.outputs.my_variable }} 
+  #         overwrite: true
+  #         body: "This is ${{ needs.get_version.outputs.my_variable }} release"
+  
+  build_checker:
+          needs: get_version
+          name: 🤖 Android Build
+          runs-on: ubuntu-latest
+          steps:
+            - uses: actions/checkout@v4
+
+            - name: print build version
+              with:
+                body: "This is ${{ needs.get_version.outputs.my_variable }} release"
+    
