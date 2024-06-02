@@ -23,7 +23,10 @@ class PortfolioPage extends StatelessWidget {
         title: Text('Portfolio'),
       ),
       body: Center(
-        child: Text('Portfolio Page'),
+        child: Text(
+          'Coming Soon',
+          style: TextStyle(fontSize: 24),
+        ),
       ),
     );
   }

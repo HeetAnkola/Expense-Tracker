@@ -1,7 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../Repo/Data.dart';
+import '../Repo/UserExpense.dart';
 
 void main() {
   runApp(const HomePage());
@@ -15,9 +14,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<HomePage> {
-  final double percentageColumn1 = 0.6; // Example percentage for column 1 (60%)
-  final double percentageColumn2 = 0.3;
-  List<User> _users = [];
+  late double percentageColumn1 = 0; // Example percentage for column 1 (60%)
+  late double percentageColumn2 = 0;
+  String _expense = '';
+  List<Expense> _expenseList = [];
+  String _monthlyExpense = '';
 
   Color getColorForPercentage(double percentage) {
     if (percentage <= 0.5) {
@@ -30,24 +31,25 @@ class _HomePage extends State<HomePage> {
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    _loadData();
+    _loadExpenseData();
   }
 
-
-  void _loadData() async{
-    try{
-      List<User> users = await fetchUsers();
-      print(users);
+  void _loadExpenseData() async {
+    try {
+      String expense = await getDailyExpenseTotal({'userId': '1'});
+      List<Expense> expenseList = await getDailyExpenseDetails({'userId': '1'});
+      String monthlyExpense = await getMonthlyExpenseTotal({'userId': '1'});
       setState(() {
-        _users = users;
+        _expense = expense;
+        percentageColumn1 = double.parse(expense) / 500;
+        _expenseList = expenseList;
+        _monthlyExpense = monthlyExpense;
+        percentageColumn2 = double.parse(monthlyExpense) / 5500;
       });
-    }
-    catch(e){
-      if (kDebugMode) {
-        print("Error Loading data: $e");
-      }
+    } catch (e) {
+      print("Error Loading data: $e");
     }
   }
 
@@ -73,7 +75,6 @@ class _HomePage extends State<HomePage> {
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -84,18 +85,17 @@ class _HomePage extends State<HomePage> {
                             backgroundColor: Colors.grey, // Background color of the progress bar
                             valueColor: AlwaysStoppedAnimation<Color>(getColorForPercentage(percentageColumn1)), // Color of the progress bar
                           ),
-
-                          const Column(
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-
-                              Text(
+                              const Text(
                                 'Today',
                                 style: TextStyle(fontSize: 10),
                               ), // Text 1
                               Text(
-                                "\$200",
-                                style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
+                                _expense,
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
                               ), // Text 2
                             ],
                           )
@@ -108,7 +108,7 @@ class _HomePage extends State<HomePage> {
                   height: 40, // Adjust the height of the divider as needed
                   child: VerticalDivider(
                     color: Colors.grey, // Color of the divider
-                    thickness: 0.5, // Thickness of the divider
+                    thickness: 0.75, // Thickness of the divider
                   ),
                 ),
                 Expanded(
@@ -125,17 +125,17 @@ class _HomePage extends State<HomePage> {
                             backgroundColor: Colors.grey, // Background color of the progress bar
                             valueColor: AlwaysStoppedAnimation<Color>(getColorForPercentage(percentageColumn2)), // Color of the progress bar
                           ), // Progress bar for column 2
-
-                          const Column(
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Text 1',
-                                style: TextStyle(color: Colors.black),
+                              const Text(
+                                'Monthly',
+                                style: TextStyle(fontSize: 10),
                               ),
                               Text(
-                                'Text 2',
-                                style: TextStyle(color: Colors.black),
-
+                                _monthlyExpense,
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                             ],
                           )
@@ -147,17 +147,53 @@ class _HomePage extends State<HomePage> {
               ],
             ),
           ),
-          Container(
-            height: 100,
-            color: Colors.black,
+          SizedBox(
+            height: 500,
             width: double.infinity,
-            child: Center( // Remove 'const'
-              child: Text(
-                _users.isNotEmpty ? _users[0].name : 'No users found', // Display first user's name or a message
-                style: const TextStyle(
-                  color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _expenseList.length,
+                    itemBuilder: (context, index) {
+                      final expense = _expenseList[index];
+                      return Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    expense.description,
+                                    style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    expense.categoryName,
+                                    style: TextStyle(
+                                        fontSize: 14.0, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              '${expense.amount}',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
+              ],
             ),
           )
         ],
@@ -165,7 +201,3 @@ class _HomePage extends State<HomePage> {
     );
   }
 }
-
-
-
-

@@ -24,8 +24,11 @@ class DebitCardsPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Cards'),
       ),
-      body: const Center(
-        child: Text('Cards Page'),
+      body: Center(
+        child: Text(
+          'Coming Soon',
+          style: TextStyle(fontSize: 24),
+        ),
       ),
     );
   }

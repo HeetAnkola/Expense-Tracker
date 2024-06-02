@@ -18,10 +18,19 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text(''),
       ),
-      body: Center(
-        child: Text('Profile Page'),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 200,
+            width: double.infinity,
+            child: Text(
+              'Coming Soon',
+              style: TextStyle(fontSize: 24),
+            ),
+          )
+        ],
       ),
     );
   }
